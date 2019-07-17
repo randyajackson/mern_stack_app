@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import DatePicker from 'react-datepicker';
+import axios from 'axios';
 import "react-datepicker/dist/react-datepicker.css";
 
 export default class CreateExercise extends Component {
@@ -26,9 +27,15 @@ export default class CreateExercise extends Component {
 
     componentDidMount(){ //react lifestyle method
         //auto called right before data is displayed on screen
-        this.setState({
-            users: ['test user'],
-            username: 'test user'
+        axios.get('http://localhost:5000/users/')
+        .then(response => {
+            if(response.data.length > 0) {
+                this.setState({
+                    //response.data is an array and map maps to the array
+                    users: response.data.map(user => user.username),
+                    username: response.data[0].username 
+                })
+            }
         })
     }
 
@@ -72,6 +79,11 @@ export default class CreateExercise extends Component {
         }
 
         console.log(exercise);
+
+        axios.post('http://localhost:5000/exercises/add', exercise)
+        .then(res => console.log(res.data)); //sends an http post request to a backend endpoint
+
+
         window.location = '/'; // goes back to list of exercises
     }
 
